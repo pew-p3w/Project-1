@@ -88,7 +88,7 @@ Incremental implementation of the asymmetric Dec-POMDP grid environment in Pytho
 - [ ] 6. Checkpoint — core components complete
   - Ensure all tests pass, ask the user if questions arise.
 
-- [-] 7. Movement system
+- [x] 7. Movement system
   - Define `ACTION_DELTAS` mapping in `env/objects.py` or a dedicated `env/actions.py` per the 8-direction table in the design
   - Implement movement validation logic (bounds check + `has_collidable`) as a helper in `env/environment.py` or `env/spatial.py`
   - Write `env/tests/test_movement.py`: unit tests for each of the 8 actions, boundary rejection, collision rejection
@@ -104,7 +104,7 @@ Incremental implementation of the asymmetric Dec-POMDP grid environment in Pytho
     - **Validates: Requirements 2.4, 5.1, 6.4**
     - Generate positions at or near grid edges with actions pointing out-of-bounds; assert AgentB position unchanged after step
 
-- [ ] 8. Observation interface
+- [-] 8. Observation interface
   - Implement `generate_observations()` in `env/environment.py` returning `ObsA` dict (agent_a, agent_b, target, obstacles sorted, timestep) and `ObsB = {}`
   - Write `env/tests/test_environment.py`: unit tests for `reset()` returning `(obs_a, obs_b)` tuple, obs_a key consistency across steps, obs_b always empty
   - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
