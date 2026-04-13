@@ -1,0 +1,12 @@
+{
+  "grid_width": 64,
+  "grid_height": 64,
+  "num_obstacles": 20,
+  "random_seed": 42,
+  "max_steps": 500,
+  "tau": 3,
+  "min_separation": 5,
+  "message_dim": 16,
+  "debug": false,
+  "log_level": "INFO"
+}

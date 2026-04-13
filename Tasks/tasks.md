@@ -6,14 +6,14 @@ Incremental implementation of the asymmetric Dec-POMDP grid environment in Pytho
 
 ## Tasks
 
-- [x] 1. Project structure and configuration loader
+- [ ] 1. Project structure and configuration loader
   - Create the directory layout: `env/`, `env/tests/`, `env/tests/properties/`
   - Create `env/__init__.py`, `env/errors.py` with all custom exception classes (`ConfigValidationError`, `MessageDimensionError`, `EpisodeTerminatedError`, `BoundaryViolationError`, `GenerationFailedError`)
   - Implement `env/config_loader.py`: `EnvConfig` dataclass and `ConfigLoader.load(path)` that validates all required fields and raises `ConfigValidationError` naming the offending field
   - Create a sample `config.json` in the project root matching the JSON schema in the design
   - _Requirements: 1.1, 1.2, 1.3, 1.5_
 
-  - [x]* 1.1 Write property test for config error naming (Property 1)
+  - [ ]* 1.1 Write property test for config error naming (Property 1)
     - **Property 1: Config Error Names the Offending Field**
     - **Validates: Requirements 1.3**
     - Use `st.sampled_from(REQUIRED_FIELDS)` to generate missing/invalid fields; assert `ConfigValidationError` message contains the field name
