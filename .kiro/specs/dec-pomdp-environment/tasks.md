@@ -18,7 +18,7 @@ Incremental implementation of the asymmetric Dec-POMDP grid environment in Pytho
     - **Validates: Requirements 1.3**
     - Use `st.sampled_from(REQUIRED_FIELDS)` to generate missing/invalid fields; assert `ConfigValidationError` message contains the field name
 
-- [ ] 2. Entity hierarchy
+- [x] 2. Entity hierarchy
   - Implement `env/entity.py`: abstract `Entity` dataclass with `id`, `x`, `y`, `static`, `collidable`
   - Implement `env/objects.py`: concrete classes `AgentA`, `AgentB`, `Obstacle`, `Target` with correct flag defaults per the design hierarchy table
   - Write `env/tests/test_entity.py`: `isinstance` checks and flag defaults for each concrete type
