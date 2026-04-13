@@ -24,7 +24,7 @@ Incremental implementation of the asymmetric Dec-POMDP grid environment in Pytho
   - Write `env/tests/test_entity.py`: `isinstance` checks and flag defaults for each concrete type
   - _Requirements: 3.1, 3.2, 3.4, 3.5_
 
-- [ ] 3. Spatial index
+- [x] 3. Spatial index
   - Implement `env/spatial.py`: `SpatialIndex` backed by `dict[tuple[int,int], set[Entity]]` with `add`, `remove`, `move` (atomic), `get`, `has_collidable`
   - Write `env/tests/test_spatial_index.py`: unit tests for add/remove/move/get/has_collidable
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
@@ -44,7 +44,7 @@ Incremental implementation of the asymmetric Dec-POMDP grid environment in Pytho
     - **Validates: Requirements 4.3, 4.4, 6.3, 6.4**
     - Assert `has_collidable()` iff at least one collidable entity is present; verify movement rejection/acceptance accordingly
 
-- [ ] 4. Latency buffer
+- [x] 4. Latency buffer
   - Implement `env/latency_buffer.py`: `LatencyBuffer(tau, message_dim=16)` using `collections.deque`; implement `push` and `pop` with zero-vector fallback before buffer fills
   - Write `env/tests/test_latency_buffer.py`: unit tests for τ=0, τ=1, τ=3, early-episode zero vectors
   - _Requirements: 10.1, 10.2, 10.3, 10.4_
@@ -59,7 +59,7 @@ Incremental implementation of the asymmetric Dec-POMDP grid environment in Pytho
     - **Validates: Requirements 10.3**
     - Use `st.integers(1, 20)` for tau; assert first τ pops on fresh buffer all return `[0.0] * 16`
 
-- [ ] 5. Procedural generator
+- [x] 5. Procedural generator
   - Implement `env/procedural_gen.py`: `ProceduralGenerator(config)` with `generate(seed) -> list[Entity]` using `random.Random(seed)` (not global state)
   - Enforce: no overlapping collidable entities, AgentB ≠ Target position, `min_separation` Manhattan distance check, all positions within grid bounds; retry on conflict up to a limit then raise `GenerationFailedError`
   - Write `env/tests/test_procedural_gen.py`: unit tests for overlap-free placement, seed reproducibility, min_separation
@@ -88,7 +88,7 @@ Incremental implementation of the asymmetric Dec-POMDP grid environment in Pytho
 - [ ] 6. Checkpoint — core components complete
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Movement system
+- [-] 7. Movement system
   - Define `ACTION_DELTAS` mapping in `env/objects.py` or a dedicated `env/actions.py` per the 8-direction table in the design
   - Implement movement validation logic (bounds check + `has_collidable`) as a helper in `env/environment.py` or `env/spatial.py`
   - Write `env/tests/test_movement.py`: unit tests for each of the 8 actions, boundary rejection, collision rejection

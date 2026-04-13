@@ -1,22 +1,19 @@
 """Concrete entity types for the Dec-POMDP environment."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from env.entity import Entity
 
 
-@dataclass
+@dataclass(eq=False)
 class AgentA(Entity):
     """Observer agent — full state visibility, no movement, non-collidable."""
-
-    static: bool = field(default=False, init=True)
-    collidable: bool = field(default=False, init=True)
 
     def __init__(self, id: str, x: int, y: int) -> None:
         super().__init__(id=id, x=x, y=y, static=False, collidable=False)
 
 
-@dataclass
+@dataclass(eq=False)
 class AgentB(Entity):
     """Actor agent — blind, 8-directional movement, collidable."""
 
@@ -24,7 +21,7 @@ class AgentB(Entity):
         super().__init__(id=id, x=x, y=y, static=False, collidable=True)
 
 
-@dataclass
+@dataclass(eq=False)
 class Obstacle(Entity):
     """Static collidable entity that blocks AgentB movement."""
 
@@ -32,7 +29,7 @@ class Obstacle(Entity):
         super().__init__(id=id, x=x, y=y, static=True, collidable=True)
 
 
-@dataclass
+@dataclass(eq=False)
 class Target(Entity):
     """Static non-collidable goal entity — AgentB may occupy its position."""
 

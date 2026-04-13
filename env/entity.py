@@ -20,3 +20,13 @@ class Entity:
     y: int
     static: bool
     collidable: bool
+
+    # Identity is based solely on the immutable ``id`` field so that entities
+    # remain hashable even after their mutable position fields are updated.
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Entity):
+            return NotImplemented
+        return self.id == other.id
+
+    def __hash__(self) -> int:
+        return hash(self.id)

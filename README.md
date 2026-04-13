@@ -75,9 +75,9 @@ pytest env/tests/properties/
 |---|---|
 | Config loader | ✅ Complete |
 | Entity hierarchy | ✅ Complete |
-| Spatial index | 🔲 Pending |
-| Latency buffer | 🔲 Pending |
-| Procedural generator | 🔲 Pending |
+| Spatial index | ✅ Complete |
+| Latency buffer | ✅ Complete |
+| Procedural generator | ✅ Complete |
 | Movement system | 🔲 Pending |
 | Observation interface | 🔲 Pending |
 | Communication interface | 🔲 Pending |
