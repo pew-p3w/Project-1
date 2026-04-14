@@ -32,7 +32,7 @@ obs_a = {
     "agent_b":          (x: float, y: float),
     "agent_b_velocity": (vx: float, vy: float),
     "target":           (x: float, y: float),
-    "target":           (vx: float, vy: float),
+    "target_velocity":  (vx: float, vy: float),
     "obstacles":        [{"type": str, ...shape_params}],
     "timestep":         int,
 }
