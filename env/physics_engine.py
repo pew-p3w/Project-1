@@ -111,7 +111,9 @@ class PhysicsEngine:
         self._agent_b_body.velocity = (vx, vy)
 
     # Number of substeps used per logical step to prevent tunneling at high velocities.
-    _SUBSTEPS: int = 20
+    # With max_speed=200 and dt=1.0, each substep moves 200/1000=0.2 units,
+    # well within the agent_radius (typically 10), preventing tunneling.
+    _SUBSTEPS: int = 1000
 
     def step(self, dt: float = 1.0) -> None:
         """Advance pymunk space by dt. Resolves all collisions.
