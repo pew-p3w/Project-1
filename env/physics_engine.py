@@ -48,13 +48,13 @@ class PhysicsEngine:
 
         walls = [
             # bottom
-            pymunk.Segment(static_body, (0.0, 0.0), (w, 0.0), 1.0),
+            pymunk.Segment(static_body, (0.0, 0.0), (w, 0.0), 0),
             # top
-            pymunk.Segment(static_body, (0.0, h), (w, h), 1.0),
+            pymunk.Segment(static_body, (0.0, h), (w, h), 0),
             # left
-            pymunk.Segment(static_body, (0.0, 0.0), (0.0, h), 1.0),
+            pymunk.Segment(static_body, (0.0, 0.0), (0.0, h), 0),
             # right
-            pymunk.Segment(static_body, (w, 0.0), (w, h), 1.0),
+            pymunk.Segment(static_body, (w, 0.0), (w, h), 0),
         ]
         for seg in walls:
             seg.elasticity = 0.5
@@ -68,7 +68,9 @@ class PhysicsEngine:
 
     def add_agent_b(self, x: float, y: float, agent_radius: float) -> None:
         """Create dynamic circular body for Agent B at (x, y)."""
-        body = pymunk.Body()
+        mass = 1.0
+        moment = pymunk.moment_for_circle(mass, 0, agent_radius)
+        body = pymunk.Body(mass, moment)
         body.position = (x, y)
         shape = pymunk.Circle(body, agent_radius)
         shape.elasticity = 0.5
@@ -108,9 +110,17 @@ class PhysicsEngine:
             raise RuntimeError("Agent B has not been added to the physics engine.")
         self._agent_b_body.velocity = (vx, vy)
 
+    # Number of substeps used per logical step to prevent tunneling at high velocities.
+    _SUBSTEPS: int = 20
+
     def step(self, dt: float = 1.0) -> None:
-        """Advance pymunk space by dt. Resolves all collisions."""
-        self._space.step(dt)
+        """Advance pymunk space by dt. Resolves all collisions.
+
+        Uses internal substeps to prevent tunneling at high velocities.
+        """
+        sub_dt = dt / self._SUBSTEPS
+        for _ in range(self._SUBSTEPS):
+            self._space.step(sub_dt)
 
     def get_agent_b_position(self) -> tuple[float, float]:
         """Query Agent B's position from pymunk after integration."""
@@ -136,11 +146,11 @@ class PhysicsEngine:
 
         # Remove obstacles
         for body, shape in zip(self._obstacle_bodies, self._obstacle_shapes):
-            self._space.remove(body, shape)
+            self._space.remove(shape, body)
         self._obstacle_bodies.clear()
         self._obstacle_shapes.clear()
 
-        # Remove old boundary walls
+        # Remove old boundary wall shapes (attached to static_body)
         for seg in self._boundary_shapes:
             self._space.remove(seg)
         self._boundary_shapes.clear()
