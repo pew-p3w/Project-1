@@ -1,0 +1,12 @@
+# Physics and Rendering
+pymunk
+pygame
+
+# Multi-Agent Environment
+pettingzoo
+gymnasium
+numpy
+
+# Testing
+pytest
+hypothesis
