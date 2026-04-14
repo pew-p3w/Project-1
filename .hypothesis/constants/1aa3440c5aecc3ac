@@ -1,4 +1,0 @@
-# file: /Users/phiwumusangidi/Documents/GitHub/Project-1/env/config_loader.py
-# hypothesis_version: 6.151.13
-
-[0.0, 'INFO', 'agent_radius', 'angle', 'capture_radius', 'circle', 'cx', 'cy', 'height', 'log_level', 'max_angular_velocity', 'max_speed', 'max_steps', 'message_dim', 'min_separation', 'obstacles', 'polygon', 'procedural', 'r', 'radius', 'random_seed', 'rect', 'render', 'tau', 'type', 'vertices', 'width', 'world_height', 'world_width']
