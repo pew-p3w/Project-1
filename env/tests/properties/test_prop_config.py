@@ -1,4 +1,4 @@
-"""Property-based tests for ConfigLoader.
+"""Property-based tests for config_loader.py.
 
 # Feature: dec-pomdp-environment, Property 1: Config Error Names the Offending Field
 """
@@ -14,61 +14,69 @@ from hypothesis import strategies as st
 from env.config_loader import REQUIRED_FIELDS, ConfigLoader
 from env.errors import ConfigValidationError
 
-# Validates: Requirements 1.3
 
-VALID_BASE = {
-    "grid_width": 64,
-    "grid_height": 64,
-    "num_obstacles": 20,
+# ---------------------------------------------------------------------------
+# Base valid config used as a template
+# ---------------------------------------------------------------------------
+
+_BASE_CONFIG = {
+    "world_width": 800.0,
+    "world_height": 600.0,
+    "agent_radius": 10.0,
+    "max_speed": 150.0,
+    "max_angular_velocity": 0.2,
+    "capture_radius": 20.0,
     "random_seed": 42,
     "max_steps": 500,
     "tau": 3,
 }
 
 
-def write_config(data: dict) -> str:
-    f = tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False)
-    json.dump(data, f)
-    f.close()
-    return f.name
-
-
-@settings(max_examples=100)
-@given(field=st.sampled_from(REQUIRED_FIELDS))
-def test_missing_required_field_error_names_field(field):
-    """Property 1: Config Error Names the Offending Field — missing field case.
-
-    Validates: Requirements 1.3
-    """
-    data = {k: v for k, v in VALID_BASE.items() if k != field}
-    path = write_config(data)
+def _write_and_load(data: dict):
+    fd, path = tempfile.mkstemp(suffix=".json")
+    with os.fdopen(fd, "w") as f:
+        json.dump(data, f)
     try:
-        with pytest.raises(ConfigValidationError) as exc_info:
-            ConfigLoader.load(path)
-        assert field in str(exc_info.value), (
-            f"ConfigValidationError message did not contain field name '{field}': "
-            f"{exc_info.value}"
-        )
+        return ConfigLoader.load(path)
     finally:
         os.unlink(path)
 
 
-@settings(max_examples=100)
-@given(field=st.sampled_from(REQUIRED_FIELDS))
-def test_wrong_type_required_field_error_names_field(field):
-    """Property 1: Config Error Names the Offending Field — wrong type case.
+# ---------------------------------------------------------------------------
+# Property 1: Config Error Names the Offending Field
+# Validates: Requirements 1.5
+# ---------------------------------------------------------------------------
 
-    Validates: Requirements 1.3
+@given(field_name=st.sampled_from(REQUIRED_FIELDS))
+@settings(max_examples=100)
+def test_missing_field_error_names_offending_field(field_name):
+    """For any required field, omitting it must raise ConfigValidationError
+    whose message contains the exact field name.
+
+    # Feature: dec-pomdp-environment, Property 1: Config Error Names the Offending Field
     """
-    # Replace the field value with a string (wrong type for all required int fields)
-    data = {**VALID_BASE, field: "wrong_type"}
-    path = write_config(data)
-    try:
-        with pytest.raises(ConfigValidationError) as exc_info:
-            ConfigLoader.load(path)
-        assert field in str(exc_info.value), (
-            f"ConfigValidationError message did not contain field name '{field}': "
-            f"{exc_info.value}"
-        )
-    finally:
-        os.unlink(path)
+    data = {k: v for k, v in _BASE_CONFIG.items() if k != field_name}
+    with pytest.raises(ConfigValidationError) as exc_info:
+        _write_and_load(data)
+    assert field_name in str(exc_info.value), (
+        f"Expected field name '{field_name}' in error message, "
+        f"but got: '{exc_info.value}'"
+    )
+
+
+@given(field_name=st.sampled_from(REQUIRED_FIELDS))
+@settings(max_examples=100)
+def test_wrong_type_field_error_names_offending_field(field_name):
+    """For any required field, providing a wrong type must raise
+    ConfigValidationError whose message contains the exact field name.
+
+    # Feature: dec-pomdp-environment, Property 1: Config Error Names the Offending Field
+    """
+    # Replace the field value with a string (always wrong for numeric fields)
+    data = {**_BASE_CONFIG, field_name: "invalid_value"}
+    with pytest.raises(ConfigValidationError) as exc_info:
+        _write_and_load(data)
+    assert field_name in str(exc_info.value), (
+        f"Expected field name '{field_name}' in error message, "
+        f"but got: '{exc_info.value}'"
+    )

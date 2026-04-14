@@ -1,12 +1,19 @@
 {
-  "grid_width": 64,
-  "grid_height": 64,
-  "num_obstacles": 20,
+  "world_width": 800.0,
+  "world_height": 600.0,
+  "agent_radius": 10.0,
+  "max_speed": 150.0,
+  "max_angular_velocity": 0.2,
+  "capture_radius": 20.0,
   "random_seed": 42,
   "max_steps": 500,
   "tau": 3,
-  "min_separation": 5,
-  "message_dim": 16,
-  "debug": false,
+  "min_separation": 100.0,
+  "obstacles": [
+    {"type": "rect", "cx": 200.0, "cy": 300.0, "width": 60.0, "height": 20.0, "angle": 0.0},
+    {"type": "circle", "cx": 500.0, "cy": 200.0, "radius": 30.0},
+    {"type": "polygon", "vertices": [[400.0, 100.0], [450.0, 150.0], [380.0, 160.0]]}
+  ],
+  "render": false,
   "log_level": "INFO"
 }
