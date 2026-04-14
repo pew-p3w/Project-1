@@ -161,18 +161,38 @@ class ProceduralGenerator:
     def _obstacles_procedural(
         self, rng: random.Random, cfg: EnvConfig
     ) -> list[Obstacle]:
-        """Generate random circle obstacles from procedural config block."""
+        """Generate random obstacles (circles, rects, triangles) from procedural config block."""
         proc = cfg.procedural
         count = int(proc.get("count", 0))
         min_r = float(proc.get("min_radius", 5.0))
         max_r = float(proc.get("max_radius", 20.0))
 
         result: list[Obstacle] = []
+        shape_types = ["circle", "rect", "triangle"]
+
         for i in range(count):
             r = rng.uniform(min_r, max_r)
-            cx = rng.uniform(r, cfg.world_width - r)
-            cy = rng.uniform(r, cfg.world_height - r)
-            shape_def = CircleDef(cx=cx, cy=cy, radius=r)
+            cx = rng.uniform(r + 10, cfg.world_width - r - 10)
+            cy = rng.uniform(r + 10, cfg.world_height - r - 10)
+            shape_type = rng.choice(shape_types)
+
+            if shape_type == "circle":
+                shape_def = CircleDef(cx=cx, cy=cy, radius=r)
+            elif shape_type == "rect":
+                w = rng.uniform(min_r * 1.5, max_r * 2.5)
+                h = rng.uniform(min_r * 0.8, max_r * 1.5)
+                angle = rng.uniform(0, math.pi)
+                shape_def = RectDef(cx=cx, cy=cy, width=w, height=h, angle=angle)
+            else:  # triangle (convex polygon with 3 vertices)
+                # Equilateral-ish triangle rotated randomly
+                angle_offset = rng.uniform(0, 2 * math.pi)
+                verts = [
+                    (cx + r * math.cos(angle_offset + k * 2 * math.pi / 3),
+                     cy + r * math.sin(angle_offset + k * 2 * math.pi / 3))
+                    for k in range(3)
+                ]
+                shape_def = PolygonDef(vertices=verts)
+
             result.append(
                 Obstacle(id=f"obstacle_{i}", x=cx, y=cy, shape_def=shape_def)
             )

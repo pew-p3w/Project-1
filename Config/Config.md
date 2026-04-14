@@ -168,10 +168,10 @@ Instead of defining obstacles manually, let the environment generate random circ
 | Field | Description |
 |---|---|
 | `count` | Number of obstacles to generate per episode |
-| `min_radius` | Minimum radius of generated circle obstacles |
-| `max_radius` | Maximum radius of generated circle obstacles |
+| `min_radius` | Minimum radius of generated obstacles |
+| `max_radius` | Maximum radius of generated obstacles |
 
-Obstacles are placed randomly each episode using `random_seed` for reproducibility.
+Obstacles are randomly chosen from circles, rectangles, and triangles each episode. Placement uses `random_seed` for reproducibility.
 
 ---
 

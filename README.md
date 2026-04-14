@@ -97,16 +97,16 @@ pytest env/tests/properties/
 
 | Component | Status |
 |---|---|
-| Config loader | 🔄 Needs update (new params) |
-| Entity hierarchy | 🔄 Needs update (float coords, shape defs) |
-| Physics engine (pymunk) | 🔲 Pending |
-| Procedural generator | 🔄 Needs update (continuous coords) |
+| Config loader | ✅ Complete |
+| Entity hierarchy | ✅ Complete |
+| Physics engine (pymunk) | ✅ Complete |
+| Procedural generator | ✅ Complete |
 | Latency buffer | ✅ Complete |
-| Velocity-based movement | 🔲 Pending |
-| Observation interface | 🔄 Needs update |
-| Communication interface | 🔲 Pending |
-| Reward & termination | 🔲 Pending |
-| Full step pipeline | 🔲 Pending |
-| Reset mechanism | 🔲 Pending |
-| Pygame renderer | 🔲 Pending |
-| Debug & logging | 🔲 Pending |
+| Velocity-based movement | ✅ Complete |
+| Observation interface | ✅ Complete |
+| Communication interface | ✅ Complete |
+| Reward & termination | ✅ Complete |
+| Full step pipeline | ✅ Complete |
+| Reset mechanism | ✅ Complete |
+| Pygame renderer | ✅ Complete |
+| Debug & logging | ✅ Complete |
