@@ -4,17 +4,17 @@ Agent B is the Actor in the asymmetric Dec-POMDP. It moves continuously through 
 
 ## Role
 
-- Receives no environment state: `z_B = ∅`
+- Receives no environment state: $\mathbf{z}_B = \emptyset$
 - Moves continuously via velocity-based steering each timestep
 - Must reach within `capture_radius` of the target to end the episode successfully
 
 ## Observability
 
-Agent B sees nothing about the world. Its only input is the message `m_{t-τ}` delivered by the latency buffer — a 16-dimensional float vector sent by Agent A `τ` timesteps ago.
+Agent B sees nothing about the world. Its only input is the message `\mathbf{m}_{t-\tau}` delivered by the latency buffer — a 16-dimensional float vector sent by Agent A $\tau$ timesteps ago.
 
 ## Movement
 
-Agent B moves like an ant or insect — smooth, continuous motion in any direction, physically blocked by obstacles and world boundaries.
+Agent B moves like an ant or insect, smooth, continuous motion in any direction, physically blocked by obstacles and world boundaries.
 
 ### Physics
 
@@ -31,15 +31,15 @@ Agent B's action is a continuous pair `(Δheading, Δspeed)`:
 | `Δheading` | float (radians) | Change in heading direction | Clamped to `[−max_angular_velocity, +max_angular_velocity]` |
 | `Δspeed` | float (world units/step) | Change in scalar speed | Result clamped to `[0, max_speed]` |
 
-After clamping, the new velocity is applied to the physics body. pymunk handles collision response — if Agent B hits an obstacle or wall, it is deflected rather than passing through.
+After clamping, the new velocity is applied to the physics body. pymunk handles collision response, if Agent B hits an obstacle or wall, it is deflected rather than passing through.
 
 ## Communication Latency
 
-Messages from Agent A are delayed by `τ` timesteps. Agent B acts on stale information, which is the core challenge this project studies. Early-episode steps (before the buffer fills) receive a zero vector.
+Messages from Agent A are delayed by $\tau$ timesteps. Agent B acts on stale information, which is the core challenge this project studies. Early-episode steps (before the buffer fills) receive a zero vector.
 
 ## Capture
 
-An episode ends successfully when the Euclidean distance between Agent B and the Target is ≤ `capture_radius`. Agent B does not collide with the Target — it simply needs to get close enough.
+An episode ends successfully when the Euclidean distance between Agent B and the Target is ≤ `capture_radius`. Agent B does not collide with the Target, it simply needs to get close enough.
 
 ## Interface (Environment Side)
 
