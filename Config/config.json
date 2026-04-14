@@ -8,12 +8,9 @@
   "random_seed": 42,
   "max_steps": 500,
   "tau": 3,
-  "min_separation": 100.0,
-  "obstacles": [
-    {"type": "rect", "cx": 200.0, "cy": 300.0, "width": 60.0, "height": 20.0, "angle": 0.0},
-    {"type": "circle", "cx": 500.0, "cy": 200.0, "radius": 30.0},
-    {"type": "polygon", "vertices": [[400.0, 100.0], [450.0, 150.0], [380.0, 160.0]]}
-  ],
+  "min_separation": 80.0,
+  "obstacles": [],
+  "procedural": {"count": 8, "min_radius": 10.0, "max_radius": 35.0},
   "render": true,
   "log_level": "INFO"
 }

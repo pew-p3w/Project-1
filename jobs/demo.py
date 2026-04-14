@@ -39,7 +39,9 @@ def main():
                 reward_str = "CAPTURED!" if result.reward > 0 else "timeout"
                 print(f"Episode {episode} ended ({reward_str}) after {step_count} steps")
                 step_count = 0
-                obs_a, obs_b = env.reset()
+                # Use a different seed each episode so procedural generation
+                # produces a fresh layout every time
+                obs_a, obs_b = env.reset(seed=episode)
     except KeyboardInterrupt:
         print("Demo stopped.")
     finally:
