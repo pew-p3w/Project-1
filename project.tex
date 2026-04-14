@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+
+\geometry{a4paper, margin=1in}
+
+\title{Emergent Communication for Coordinated Target Capture in Asymmetric Dec-POMDPs}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+we investigate emergent communication protocols within an asymmetric Decentralized Partially Observable Markov Decision Process (Dec-POMDP). The objective is the coordinated capture of a target by two agents operating under strictly differing observability and actuation constraints within a discrete environment.
+
+\section{Problem Formulation}
+We formalize the environment as an asymmetric Dec-POMDP defined by the tuple $\langle \mathcal{I}, \mathcal{S}, \mathcal{A}, \mathcal{Z}, \mathcal{T}, \mathcal{O}, \mathcal{R}, \gamma \rangle$:
+
+\begin{itemize}
+    \item $\mathcal{I} = \{A, B\}$ represents the set of agents.
+    \item $\mathcal{S}$ is the state space, defined as a $64 \times 64$ discrete grid containing procedurally generated obstacles and a target.
+    \item $\mathcal{A} = \mathcal{A}_A \times \mathcal{A}_B$ is the joint action space. Agent A acts purely as a communicator. Agent B is the actor, with a navigation action space that includes diagonal translations to increase trajectory complexity.
+    \item $\mathcal{Z} = \mathcal{Z}_A \times \mathcal{Z}_B$ is the joint observation space.
+    \item $\mathcal{T}$ represents the transition dynamics.
+    \item $\mathcal{R}$ is the joint reward function mapped to target capture.
+\end{itemize}
+
+\subsection{Asymmetric Observability}
+The core asymmetry of the system is dictated by the observation function $\mathcal{O}$:
+\begin{itemize}
+    \item \textbf{Agent A (Observer):} Receives the full, unoccluded environment state $s \in \mathcal{S}$, such that $z_A = s$. This includes the spatial distribution of obstacles, target coordinates, and Agent B's position.
+    \item \textbf{Agent B (Actor):} Operates under zero-visibility conditions regarding the environment state $s$, effectively rendering $z_B = \emptyset$ (excluding internal state or received messages).
+\end{itemize}
+
+\subsection{Communication Protocol}
+Coordination is achieved via a custom continuous communication channel. At each timestep $t$, Agent A transmits a message vector $m_t \in \mathbb{R}^{16}$ to Agent B. The primary technical constraint is ensuring $m_t$ encodes dense spatial abstractions rather than collapsing into a trivial greedy directional heuristic mapping to $\mathcal{A}_B$.
+
+\subsection{Network Latency}
+To evaluate the robustness of the emergent communication representations, artificial network latency $\tau$ is introduced to the transmission pipeline. This decouples the state $s_t$ observed by Agent A from the environment state $s_{t+\tau}$ present when Agent B executes actions based on $m_t$.
+\end{document}
