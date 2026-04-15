@@ -53,7 +53,8 @@ _BASE_CONFIG = {
     "log_level": "WARNING",
 }
 
-_OBS_A_REQUIRED_KEYS = {"agent_a", "agent_b", "agent_b_velocity", "target", "obstacles", "timestep"}
+_OBS_A_RESET_KEYS = {"agent_a", "agent_b", "agent_b_velocity", "target", "obstacles", "timestep"}
+_OBS_A_STEP_KEYS = {"agent_a", "agent_b", "agent_b_velocity", "target", "timestep"}
 
 
 def _write_config(cfg: dict) -> str:
@@ -112,7 +113,7 @@ def test_reset_obs_b_is_empty_dict(env):
 
 def test_reset_obs_a_has_all_required_keys(env):
     obs_a, _ = env.reset()
-    assert _OBS_A_REQUIRED_KEYS == set(obs_a.keys())
+    assert _OBS_A_RESET_KEYS == set(obs_a.keys())
 
 
 def test_reset_obs_a_timestep_is_zero(env):
@@ -166,6 +167,7 @@ def test_generate_observations_key_set_identical_on_repeated_calls(env):
     obs_a1, _ = env.generate_observations()
     obs_a2, _ = env.generate_observations()
     assert set(obs_a1.keys()) == set(obs_a2.keys())
+    assert set(obs_a1.keys()) == _OBS_A_STEP_KEYS
 
 
 def test_generate_observations_obs_b_always_empty(env):
@@ -182,6 +184,7 @@ def test_generate_observations_obs_b_always_empty(env):
 def test_state_dict_contains_required_keys(env):
     env.reset()
     sd = env.state_dict()
+    assert "agent_a" in sd
     assert "agent_b" in sd
     assert "target" in sd
     assert "timestep" in sd
@@ -504,7 +507,7 @@ def test_reset_returns_obs_a_obs_b_tuple_with_correct_types(env):
     assert isinstance(obs_a, dict)
     assert isinstance(obs_b, dict)
     # obs_a must have all required keys
-    assert _OBS_A_REQUIRED_KEYS == set(obs_a.keys())
+    assert _OBS_A_RESET_KEYS == set(obs_a.keys())
     # obs_b must be empty
     assert obs_b == {}
 
@@ -517,9 +520,9 @@ def test_double_reset_works_correctly(env):
     obs_a2, _ = env.reset()
     assert env.timestep == 0
     assert obs_a2["timestep"] == 0
-    # Both resets should return valid observations
-    assert _OBS_A_REQUIRED_KEYS == set(obs_a1.keys())
-    assert _OBS_A_REQUIRED_KEYS == set(obs_a2.keys())
+    # Both resets should return valid observations with reset keys
+    assert _OBS_A_RESET_KEYS == set(obs_a1.keys())
+    assert _OBS_A_RESET_KEYS == set(obs_a2.keys())
 
 
 # ---------------------------------------------------------------------------
