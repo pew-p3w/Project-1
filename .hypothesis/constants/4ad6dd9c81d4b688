@@ -1,4 +1,0 @@
-# file: /Users/phiwumusangidi/Documents/GitHub/Project-1/env/environment.py
-# hypothesis_version: 6.151.13
-
-[0.0, 1.0, 'StepResult', 'agent_a', 'agent_b', 'agent_b_velocity', 'angle', 'circle', 'cx', 'cy', 'height', 'info', 'last_reward', 'message', 'obs_a', 'obs_b', 'obstacles', 'polygon', 'radius', 'rect', 'reward', 'target', 'terminated', 'timestep', 'type', 'vertices', 'width']
