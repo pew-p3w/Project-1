@@ -1,6 +1,6 @@
 {
-  "world_width": 900.0,
-  "world_height": 600.0,
+  "world_width": 1000,
+  "world_height": 1000,
   "agent_radius": 10.0,
   "max_speed": 150.0,
   "max_angular_velocity": 0.2,
