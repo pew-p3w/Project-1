@@ -143,7 +143,7 @@ class DecPOMDPEnvironment:
             seed: Optional seed override. If None, uses config.random_seed.
 
         Returns:
-            (obs_a, obs_b) tuple of initial observations.
+            (obs_a, obs_b) tuple of initial observations. obs_a includes 'obstacles'.
         """
         self._current_seed = seed if seed is not None else self._config.random_seed
 
@@ -181,29 +181,32 @@ class DecPOMDPEnvironment:
             len(self._obstacles),
         )
 
-        return self.generate_observations()
+        obs_a, obs_b = self.generate_observations()
+        
+        # Add obstacles only to the reset observation
+        obstacle_dicts: list[dict] = []
+        for obs in self._obstacles:
+            if obs.shape_def is not None:
+                obstacle_dicts.append(_shape_def_to_dict(obs.shape_def))
+        obs_a["obstacles"] = obstacle_dicts
+
+        return obs_a, obs_b
 
     def generate_observations(self) -> tuple[dict, dict]:
         """Build and return (obs_a, obs_b).
 
-        obs_a contains the full environment state.
+        obs_a contains the dynamic environment state.
         obs_b is always an empty dict.
         """
         assert self._agent_a is not None, "reset() must be called before generate_observations()"
         assert self._agent_b is not None
         assert self._target is not None
 
-        obstacle_dicts: list[dict] = []
-        for obs in self._obstacles:
-            if obs.shape_def is not None:
-                obstacle_dicts.append(_shape_def_to_dict(obs.shape_def))
-
         obs_a: dict = {
             "agent_a": (self._agent_a.x, self._agent_a.y),
             "agent_b": (self._agent_b.x, self._agent_b.y),
             "agent_b_velocity": (self._agent_b.vx, self._agent_b.vy),
             "target": (self._target.x, self._target.y),
-            "obstacles": obstacle_dicts,
             "timestep": self.timestep,
         }
         obs_b: dict = {}
@@ -213,9 +216,10 @@ class DecPOMDPEnvironment:
     def state_dict(self) -> dict:
         """Return full current state as a structured dictionary.
 
-        Includes Agent B position and velocity, Target position,
+        Includes Agent A & B positions, Agent B velocity, Target position,
         Obstacle geometries, timestep, last reward, and terminated flag.
         """
+        agent_a_pos = (self._agent_a.x, self._agent_a.y) if self._agent_a else None
         agent_b_pos = (self._agent_b.x, self._agent_b.y) if self._agent_b else None
         agent_b_vel = (self._agent_b.vx, self._agent_b.vy) if self._agent_b else None
         target_pos = (self._target.x, self._target.y) if self._target else None
@@ -226,6 +230,7 @@ class DecPOMDPEnvironment:
                 obstacle_dicts.append(_shape_def_to_dict(obs.shape_def))
 
         return {
+            "agent_a": agent_a_pos,
             "agent_b": agent_b_pos,
             "agent_b_velocity": agent_b_vel,
             "target": target_pos,

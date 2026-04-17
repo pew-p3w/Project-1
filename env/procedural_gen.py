@@ -89,12 +89,6 @@ class ProceduralGenerator:
             agent_b = AgentB(id="agent_b", x=bx, y=by)
             target = Target(id="target", x=tx, y=ty)
 
-            # Register obstacles with a fresh PhysicsEngine
-            physics = PhysicsEngine(cfg)
-            for obs in obstacles:
-                physics.add_obstacle(obs.shape_def)
-            physics.add_agent_b(bx, by, cfg.agent_radius)
-
             return GeneratedLayout(
                 agent_a=agent_a,
                 agent_b=agent_b,

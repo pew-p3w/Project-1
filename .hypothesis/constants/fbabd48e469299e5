@@ -1,4 +1,0 @@
-# file: /Users/phiwumusangidi/Documents/GitHub/Project-1/env/config_loader.py
-# hypothesis_version: 6.151.13
-
-['INFO', 'debug', 'grid_height', 'grid_width', 'log_level', 'max_steps', 'message_dim', 'min_separation', 'num_obstacles', 'r', 'random_seed', 'tau']

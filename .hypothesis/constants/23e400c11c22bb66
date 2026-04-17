@@ -1,4 +1,0 @@
-# file: /Users/phiwumusangidi/Documents/GitHub/Project-1/env/procedural_gen.py
-# hypothesis_version: 6.151.13
-
-[0.0, 5.0, 20.0, 1000, 'agent_a', 'agent_b', 'angle', 'circle', 'count', 'cx', 'cy', 'height', 'max_radius', 'min_radius', 'polygon', 'radius', 'rect', 'target', 'type', 'vertices', 'width']
