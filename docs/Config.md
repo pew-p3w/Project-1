@@ -1,6 +1,6 @@
 # Environment Configuration Guide
 
-All environment parameters are controlled through `Config/config.json`. No code changes needed — just edit the JSON and re-run.
+All environment parameters are controlled through `Config/config.json`. This guide describes the available settings for the Multi-Agent Target Capture environment.
 
 ---
 
@@ -10,48 +10,52 @@ All environment parameters are controlled through `Config/config.json`. No code 
 
 | Parameter | Type | Required | Description |
 |---|---|---|---|
-| `world_width` | float | yes | Width of the 2D world in units (e.g. 800.0) |
-| `world_height` | float | yes | Height of the 2D world in units (e.g. 600.0) |
-
-The world is bounded by solid walls on all four edges. Agent B cannot leave.
+| `world_width` | float | yes | Width of the 2D world in units |
+| `world_height` | float | yes | Height of the 2D world in units |
 
 ---
 
-### Physics & Agent B Movement
+### Catcher Agents
+
+Both agents (A and B) share these physical properties.
 
 | Parameter | Type | Required | Description |
 |---|---|---|---|
-| `agent_radius` | float | yes | Radius of Agent B's circular collision body. Larger = harder to navigate tight spaces |
-| `max_speed` | float | yes | Maximum speed Agent B can reach (world units per step). Higher = faster agent |
-| `max_angular_velocity` | float | yes | Maximum heading change per step in radians. Lower = less agile, more realistic turning |
-| `capture_radius` | float | yes | How close Agent B must get to the target to capture it. Larger = easier to capture |
+| `agent_radius` | float | yes | Radius of the agent's circular body |
+| `max_speed` | float | yes | Maximum speed an agent can reach |
+| `max_angular_velocity` | float | yes | Maximum rate of change for heading (radians/step) |
+| `capture_radius` | float | yes | Distance threshold for a successful capture |
 
-**Tuning tips:**
-- Increase `max_angular_velocity` for a more agile agent, decrease for a more realistic vehicle-like turning radius
-- `capture_radius` defines the yellow circle around the target in the renderer — Agent B wins when it enters that circle
-
----
-
-### Episode
+### Ray-Casting Observations
 
 | Parameter | Type | Required | Description |
 |---|---|---|---|
-| `random_seed` | int | yes | Seed for reproducible world generation. Change to get a different layout |
-| `max_steps` | int | yes | Maximum steps per episode before timeout. Increase for longer episodes |
-| `tau` | int | yes | Communication latency in timesteps. Agent B receives messages `tau` steps late |
-
-**Tuning tips:**
-- `tau = 0` — no delay, Agent B gets messages instantly (easiest)
-- `tau = 3` — 3-step delay (default, moderate difficulty)
-- `tau = 10+` — high latency, very challenging coordination
+| `num_rays` | int | yes | Number of rays cast by each agent |
+| `ray_length` | float | yes | Maximum distance a ray can travel |
+| `fov` | float | yes | Field of view in radians (e.g., `2 * pi` for 360 degrees) |
 
 ---
 
-### Spawn Constraints
+### Moving Target
 
-| Parameter | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `min_separation` | float | no | 0.0 | Minimum Euclidean distance between Agent B and the target at spawn. Prevents trivially easy episodes |
+The target is dynamic and attempts to evade the catchers.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `target_radius` | float | yes | Radius of the target's circular body |
+| `target_max_speed` | float | yes | Maximum speed of the target (usually > `max_speed`) |
+| `target_strategy` | str | no | Strategy for evasion (e.g., `"reactive"`, `"random"`) |
+
+---
+
+### Communication & Episode
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `random_seed` | int | yes | Seed for reproducible generation |
+| `max_steps` | int | yes | Maximum steps per episode |
+| `tau` | int | yes | Communication latency (timesteps) |
+| `message_dim` | int | no | Dimension of the communication vector (default: 8) |
 
 ---
 
@@ -59,10 +63,8 @@ The world is bounded by solid walls on all four edges. Agent B cannot leave.
 
 | Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `obstacles` | list | no | `[]` | List of explicit obstacle definitions (see shapes below) |
-| `procedural` | object | no | `null` | Procedural obstacle generation settings (see below) |
-
-If both are empty, the world has no obstacles — just open space.
+| `obstacles` | list | no | `[]` | List of explicit obstacle definitions |
+| `procedural` | object | no | `null` | Procedural generation settings |
 
 ---
 
@@ -70,233 +72,36 @@ If both are empty, the world has no obstacles — just open space.
 
 | Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `render` | bool | no | `false` | Set to `true` to open the Pygame window and watch the simulation live |
-| `log_level` | str | no | `"INFO"` | Logging verbosity: `"DEBUG"`, `"INFO"`, `"WARNING"`, `"ERROR"` |
-| `message_dim` | int | no | `16` | Dimension of the communication message vector. Keep at 16 unless you know what you're doing |
+| `render` | bool | no | `false` | Enable live Pygame visualization |
+| `log_level` | str | no | `"INFO"` | Logging verbosity |
 
 ---
 
 ## Obstacle Shapes
 
-### Rectangular Wall
-
-Defined by centre position, size, and rotation angle.
-
-```json
-{
-  "type": "rect",
-  "cx": 400.0,
-  "cy": 300.0,
-  "width": 200.0,
-  "height": 20.0,
-  "angle": 0.0
-}
-```
-
-| Field | Description |
-|---|---|
-| `cx`, `cy` | Centre position of the rectangle |
-| `width` | Width of the rectangle (must be > 0) |
-| `height` | Height of the rectangle (must be > 0) |
-| `angle` | Rotation in radians (0.0 = horizontal) |
-
-Rendered as a red rectangle.
+The environment supports `rect`, `circle`, and `polygon` obstacle types. See the design document for detailed geometry definitions.
 
 ---
 
-### Circular Pillar
-
-Defined by centre position and radius.
-
-```json
-{
-  "type": "circle",
-  "cx": 300.0,
-  "cy": 200.0,
-  "radius": 40.0
-}
-```
-
-| Field | Description |
-|---|---|
-| `cx`, `cy` | Centre position of the circle |
-| `radius` | Radius of the pillar (must be > 0) |
-
-Rendered as an orange circle.
-
----
-
-### Convex Polygon
-
-Defined by an ordered list of vertices. Must be convex (no concave shapes).
-
-```json
-{
-  "type": "polygon",
-  "vertices": [
-    [100.0, 100.0],
-    [150.0, 80.0],
-    [180.0, 130.0],
-    [120.0, 150.0]
-  ]
-}
-```
-
-| Field | Description |
-|---|---|
-| `vertices` | List of `[x, y]` coordinate pairs. Minimum 3 points. Must form a convex shape |
-
-Rendered as a purple polygon.
-
----
-
-## Procedural Obstacle Generation
-
-Instead of defining obstacles manually, let the environment generate random circle obstacles each episode.
-
-```json
-{
-  "obstacles": [],
-  "procedural": {
-    "count": 8,
-    "min_radius": 10.0,
-    "max_radius": 30.0
-  }
-}
-```
-
-| Field | Description |
-|---|---|
-| `count` | Number of obstacles to generate per episode |
-| `min_radius` | Minimum radius of generated obstacles |
-| `max_radius` | Maximum radius of generated obstacles |
-
-Obstacles are randomly chosen from circles, rectangles, and triangles each episode. Placement uses `random_seed` for reproducibility.
-
----
-
-## Example Configurations
-
-### Open World (no obstacles)
+## Example Configuration
 
 ```json
 {
   "world_width": 800.0,
   "world_height": 600.0,
-  "agent_radius": 10.0,
-  "max_speed": 150.0,
-  "max_angular_velocity": 0.2,
-  "capture_radius": 20.0,
-  "random_seed": 42,
-  "max_steps": 500,
-  "tau": 3,
-  "obstacles": [],
-  "render": true,
-  "log_level": "INFO"
-}
-```
-
----
-
-### Corridor / Maze Layout
-
-Two vertical walls creating a corridor Agent B must navigate through.
-
-```json
-{
-  "world_width": 800.0,
-  "world_height": 600.0,
-  "agent_radius": 10.0,
-  "max_speed": 150.0,
-  "max_angular_velocity": 0.2,
-  "capture_radius": 20.0,
-  "random_seed": 42,
-  "max_steps": 500,
-  "tau": 3,
-  "min_separation": 100.0,
-  "obstacles": [
-    {"type": "rect", "cx": 300.0, "cy": 200.0, "width": 20.0, "height": 300.0, "angle": 0.0},
-    {"type": "rect", "cx": 500.0, "cy": 400.0, "width": 20.0, "height": 300.0, "angle": 0.0}
-  ],
-  "render": true,
-  "log_level": "INFO"
-}
-```
-
----
-
-### Pillar Field
-
-Multiple circular pillars scattered across the world.
-
-```json
-{
-  "world_width": 800.0,
-  "world_height": 600.0,
-  "agent_radius": 10.0,
-  "max_speed": 150.0,
-  "max_angular_velocity": 0.2,
-  "capture_radius": 20.0,
-  "random_seed": 42,
-  "max_steps": 500,
-  "tau": 3,
-  "obstacles": [
-    {"type": "circle", "cx": 200.0, "cy": 150.0, "radius": 30.0},
-    {"type": "circle", "cx": 400.0, "cy": 300.0, "radius": 25.0},
-    {"type": "circle", "cx": 600.0, "cy": 150.0, "radius": 30.0},
-    {"type": "circle", "cx": 200.0, "cy": 450.0, "radius": 25.0},
-    {"type": "circle", "cx": 600.0, "cy": 450.0, "radius": 30.0}
-  ],
-  "render": true,
-  "log_level": "INFO"
-}
-```
-
----
-
-### Procedural Random World
-
-New random obstacle layout every episode.
-
-```json
-{
-  "world_width": 800.0,
-  "world_height": 600.0,
-  "agent_radius": 10.0,
-  "max_speed": 150.0,
-  "max_angular_velocity": 0.2,
-  "capture_radius": 20.0,
-  "random_seed": 42,
-  "max_steps": 500,
-  "tau": 3,
-  "min_separation": 80.0,
-  "obstacles": [],
-  "procedural": {"count": 8, "min_radius": 10.0, "max_radius": 35.0},
-  "render": true,
-  "log_level": "INFO"
-}
-```
-
----
-
-### High Latency Challenge
-
-Crank up `tau` to make coordination much harder.
-
-```json
-{
-  "world_width": 800.0,
-  "world_height": 600.0,
-  "agent_radius": 10.0,
+  "agent_radius": 15.0,
   "max_speed": 100.0,
-  "max_angular_velocity": 0.15,
+  "max_angular_velocity": 0.2,
+  "num_rays": 32,
+  "ray_length": 400.0,
+  "fov": 6.28,
+  "target_radius": 10.0,
+  "target_max_speed": 120.0,
   "capture_radius": 25.0,
   "random_seed": 42,
   "max_steps": 1000,
-  "tau": 10,
-  "min_separation": 150.0,
-  "obstacles": [],
-  "procedural": {"count": 5, "min_radius": 15.0, "max_radius": 40.0},
+  "tau": 2,
+  "message_dim": 8,
   "render": true,
   "log_level": "INFO"
 }
@@ -308,20 +113,9 @@ Crank up `tau` to make coordination much harder.
 
 | Colour | Entity |
 |---|---|
-| Blue circle | Agent B (the actor) |
-| Green circle (top-left) | Agent A (the observer) |
-| Yellow circle | Target + capture zone |
-| Red rectangle | Rectangular wall obstacle |
-| Orange circle | Circular pillar obstacle |
-| Purple polygon | Polygon obstacle |
-
----
-
-## Running the Demo
-
-```bash
-# Make sure render is set to true in Config/config.json
-.venv/bin/python jobs/demo.py
-```
-
-Agent B moves with random actions until you close the window or press Ctrl+C.
+| Blue circle | Agent A |
+| Cyan circle | Agent B |
+| Green circle | Target |
+| Yellow circle | Capture Zone (around Target) |
+| Red/Purple | Obstacles |
+| White lines | Ray-casts (optional debug view) |

@@ -1,40 +1,25 @@
-# Resources
+# Project Resources
 
-Reference materials for the Emergent Communication in Asymmetric Dec-POMDPs project.
+A collection of libraries, tools, and documentation used in the Multi-Agent Target Capture project.
 
-## Foundational Papers
+## Core Libraries
 
-- **Dec-POMDP Framework**: Bernstein et al. (2002) — "The Complexity of Decentralized Control of Markov Decision Processes"
-- **Emergent Communication**: Lazaridou & Baroni (2020) — "Emergent Multi-Agent Communication in the Deep Learning Era"
-- **DIAL / CommNet**: Foerster et al. (2016) — "Learning to Communicate with Deep Multi-Agent Reinforcement Learning"
-- **MADDPG**: Lowe et al. (2017) — "Multi-Agent Actor-Critic for Mixed Cooperative-Competitive Environments"
+- **[Pymunk](http://www.pymunk.org/)**: A 2D physics library for Python, built on top of Chipmunk2D.
+- **[PettingZoo](https://pettingzoo.farama.org/)**: A library for multi-agent reinforcement learning with a standard API.
+- **[Stable Baselines3](https://stable-baselines3.readthedocs.io/)**: A set of reliable implementations of reinforcement learning algorithms in PyTorch.
+- **[Gymnasium](https://gymnasium.farama.org/)**: An API standard for single-agent reinforcement learning environments (used for individual agent spaces).
+- **[SuperSuit](https://github.com/Farama-Foundation/SuperSuit)**: A collection of wrapper functions for PettingZoo and Gymnasium environments.
 
-## Relevant Concepts
+## Relevant Research & Concepts
 
-- **Dec-POMDP**: Decentralized Partially Observable Markov Decision Process — the formal framework used in this project
-- **Asymmetric Observability**: Agent A sees the full continuous world state; Agent B sees nothing — the core setup here
-- **Emergent Communication**: Communication protocols that arise from training rather than being hand-designed
-- **Network Latency (τ)**: Artificial delay introduced to the message channel to study robustness of learned representations
-- **Continuous Physics**: Agent B moves with velocity-based steering in a 2D world with geometric obstacles, using pymunk for collision detection
+- **Multi-Agent Reinforcement Learning (MARL)**: Learning optimal policies for multiple interacting agents.
+- **Emergent Communication**: Studying how agents develop protocols to exchange information.
+- **Ray-Casting**: A technique used in computer graphics and robotics to simulate depth perception and field of view.
+- **Dec-POMDPs**: Decentralized Partially Observable Markov Decision Processes (the underlying mathematical framework).
 
-## Similar Environments
+## Documentation Pointers
 
-- **OpenAI Multiagent Particle Environments** — continuous 2D multi-agent environments with communication
-- **MuJoCo / dm_control** — continuous physics simulation for RL
-- **Pygame + pymunk demos** — 2D physics sandbox environments
-
-## Project Documents
-
-- `project.tex` — Formal problem formulation (LaTeX)
-- `.kiro/specs/dec-pomdp-environment/requirements.md` — Environment requirements
-- `.kiro/specs/dec-pomdp-environment/design.md` — Technical design
-- `.kiro/specs/dec-pomdp-environment/tasks.md` — Implementation task list
-
-## Tools & Libraries
-
-- **Python** — Primary implementation language
-- **pymunk** — 2D physics library (Chipmunk-based) for collision detection and response
-- **Pygame** — Rendering and visualization
-- **hypothesis** — Property-based testing library
-- **pytest** — Test runner
-- **PyTorch** — Neural network framework (future agent implementation)
+- [Design Document](design.md): Architectural overview and component design.
+- [Requirements](requirements.md): Functional and technical requirements.
+- [Configuration Guide](Config.md): Detailed explanation of `config.json` parameters.
+- [Task List](tasks.md): Current implementation status and roadmap.
