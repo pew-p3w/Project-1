@@ -1,112 +1,55 @@
-# Emergent Communication in Asymmetric Dec-POMDPs
+# Multi-Agent Coordination for Target Capture
 
-Research project investigating emergent communication protocols for coordinated target capture between two agents operating under strictly asymmetric observability and actuation constraints in a continuous 2D physics environment.
+A research project focused on emergent communication and coordination between two agents tasked with capturing a fast-moving target in a continuous 2D physics environment.
 
 ## Overview
 
-Two agents — an Observer (Agent A) and an Actor (Agent B) — must cooperate to capture a target in a continuous 2D world. Agent A sees everything but cannot move. Agent B is completely blind but moves fluidly through the environment like an insect, physically blocked by geometric obstacles. Coordination happens through a continuous message channel with artificial network latency.
+Two agents must cooperate to catch a moving target within a strict time constraint. Both agents operate in a continuous 2D world powered by the `pymunk` physics engine. Unlike the previous asymmetric setup, both agents are now active participants with their own movement capabilities and observation spaces.
 
-Formally defined as an asymmetric Dec-POMDP: `⟨I, S, A, Z, T, O, R, γ⟩`
+### Key Features
+
+- **Multi-Agent Environment**: Built using the `PettingZoo` Parallel/AEC interface.
+- **Ray-Casting Observations**: Agents perceive the world through rays, providing realistic, ego-centric partial observability.
+- **Communication**: Agents can communicate via a dedicated channel to coordinate their strategy for catching a target that is faster than any individual agent.
+- **Continuous Physics**: Realistic movement and collision handling using `pymunk`.
+- **Reinforcement Learning**: Algorithms developed and trained using `Stable Baselines3`.
 
 ## Project Structure
 
 ```
-├── Agent_A/          # Agent A policy and network code
-├── Agent_B/          # Agent B policy and network code
-├── Config/           # JSON configuration files
-│   └── config.json   # Environment parameters
-├── env/              # Continuous physics environment (simulation layer)
-│   ├── entity.py     # Base Entity dataclass (float positions)
-│   ├── objects.py    # AgentA, AgentB, Obstacle, Target + shape defs
-│   ├── physics_engine.py  # pymunk wrapper
-│   ├── procedural_gen.py  # Seeded entity placement
-│   ├── latency_buffer.py  # τ-step FIFO message delay
-│   ├── environment.py     # DecPOMDPEnvironment orchestrator
-│   ├── renderer.py        # Optional Pygame visualisation
-│   ├── config_loader.py
-│   ├── errors.py
-│   └── tests/        # Unit and property-based tests
-├── jobs/             # Training and experiment job scripts
-├── output/           # Results, logs, checkpoints
-├── Resources/        # Reference materials
-├── Tasks/            # Task planning documents
-└── utils/            # Shared utilities
+├── Agent_A/          # Agent A policy and network code (SB3 compatible)
+├── Agent_B/          # Agent B policy and network code (SB3 compatible)
+├── Config/           # Configuration files
+│   └── config.json   # Environment and training parameters
+├── env/              # PettingZoo-compatible environment
+│   ├── entity.py     # Base Entity dataclass
+│   ├── objects.py    # Agent, Obstacle, Target definitions
+│   ├── physics_engine.py  # Pymunk wrapper
+│   ├── environment.py     # PettingZoo environment orchestrator
+│   ├── renderer.py        # Pygame-based visualization
+│   └── ...
+├── docs/             # Technical documentation and design specs
+├── tests/            # Unit and property-based tests
+└── requirements.txt  # Project dependencies
 ```
 
-## Environment
+## Technical Stack
 
-The simulation layer (`env/`) is a continuous 2D physics world built on pymunk. It is fully decoupled from any learning algorithm. All parameters are loaded from `Config/config.json` at initialization.
+- **Physics**: [Pymunk](http://www.pymunk.org/) (Chipmunk2D wrapper)
+- **Interface**: [PettingZoo](https://pettingzoo.farama.org/) (MAv3)
+- **Algorithms**: [Stable Baselines3](https://stable-baselines3.readthedocs.io/)
+- **Visualisation**: [Pygame](https://www.pygame.org/)
 
-### How It Works
+## Getting Started
 
-- **World**: A continuous 2D space of configurable dimensions (e.g. 800×600 units)
-- **Agent B** moves like an ant — smooth velocity-based steering, physically blocked by obstacles and walls
-- **Agent A** is stationary, observes the full world state, sends a 16-float message each timestep
-- **Obstacles** are geometric shapes: rectangular walls, circular pillars, convex polygons
-- **Capture**: Agent B wins when it gets within `capture_radius` of the Target
-
-### Agents
-
-- **Agent A (Observer):** Receives full state `z_A = s`. Sends `m_t ∈ ℝ¹⁶` each timestep. No movement.
-- **Agent B (Actor):** Receives no environment state `z_B = ∅`. Steers via `(Δheading, Δspeed)` actions based solely on delayed messages from Agent A.
-
-### Communication
-
-Agent A transmits `m_t ∈ ℝ¹⁶` each timestep. Messages are delayed by `τ` timesteps via a FIFO latency buffer before delivery to Agent B. Early-episode steps receive a zero vector.
-
-### Config Parameters
-
-| Field | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `world_width` | float | yes | — | World width in units |
-| `world_height` | float | yes | — | World height in units |
-| `agent_radius` | float | yes | — | Agent B collision radius |
-| `max_speed` | float | yes | — | Max Agent B speed |
-| `max_angular_velocity` | float | yes | — | Max heading change per step (radians) |
-| `capture_radius` | float | yes | — | Distance threshold for capture |
-| `random_seed` | int | yes | — | Seed for reproducibility |
-| `max_steps` | int | yes | — | Max steps per episode |
-| `tau` | int | yes | — | Message latency (timesteps) |
-| `min_separation` | float | no | 0.0 | Min spawn distance between Agent B and target |
-| `obstacles` | list | no | [] | Explicit obstacle definitions |
-| `render` | bool | no | false | Enable Pygame window |
-| `log_level` | str | no | "INFO" | Logging verbosity |
-
-### Obstacle Types
-
-```json
-{"type": "rect",    "cx": 200.0, "cy": 300.0, "width": 60.0, "height": 20.0, "angle": 0.0}
-{"type": "circle",  "cx": 500.0, "cy": 200.0, "radius": 30.0}
-{"type": "polygon", "vertices": [[400,100],[450,150],[380,160]]}
-```
-
-## Running Tests
+### Installation
 
 ```bash
-# Install dependencies
-pip install pytest hypothesis pymunk pygame
-
-# Run all tests
-pytest env/tests/
-
-# Run property-based tests only
-pytest env/tests/properties/
+pip install -r requirements.txt
 ```
 
-## Status
+### Running Tests
 
-| Component | Status |
-|---|---|
-| Config loader | ✅ Complete |
-| Entity hierarchy | ✅ Complete |
-| Physics engine (pymunk) | ✅ Complete |
-| Procedural generator | ✅ Complete |
-| Latency buffer | ✅ Complete |
-| Velocity-based movement | ✅ Complete |
-| Observation interface | ✅ Complete |
-| Communication interface | ✅ Complete |
-| Reward & termination | ✅ Complete |
-| Full step pipeline | ✅ Complete |
-| Reset mechanism | ✅ Complete |
-| Pygame renderer | ✅ Complete |
-| Debug & logging | ✅ Complete |
+```bash
+pytest tests/
+```
