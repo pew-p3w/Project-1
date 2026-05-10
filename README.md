@@ -4,7 +4,7 @@ A research project focused on emergent communication and coordination between tw
 
 ## Overview
 
-Two agents must cooperate to catch a moving target within a strict time constraint. Both agents operate in a continuous 2D world powered by the `pymunk` physics engine. Unlike the previous asymmetric setup, both agents are now active participants with their own movement capabilities and observation spaces.
+Two agents must cooperate to catch a moving target within a strict time constraint. Both agents operate in a continuous 2D world powered by the `pymunk` physics engine.
 
 ### Key Features
 
@@ -13,25 +13,6 @@ Two agents must cooperate to catch a moving target within a strict time constrai
 - **Communication**: Agents can communicate via a dedicated channel to coordinate their strategy for catching a target that is faster than any individual agent.
 - **Continuous Physics**: Realistic movement and collision handling using `pymunk`.
 - **Reinforcement Learning**: Algorithms developed and trained using `Stable Baselines3`.
-
-## Project Structure
-
-```
-├── Agent_A/          # Agent A policy and network code (SB3 compatible)
-├── Agent_B/          # Agent B policy and network code (SB3 compatible)
-├── Config/           # Configuration files
-│   └── config.json   # Environment and training parameters
-├── env/              # PettingZoo-compatible environment
-│   ├── entity.py     # Base Entity dataclass
-│   ├── objects.py    # Agent, Obstacle, Target definitions
-│   ├── physics_engine.py  # Pymunk wrapper
-│   ├── environment.py     # PettingZoo environment orchestrator
-│   ├── renderer.py        # Pygame-based visualization
-│   └── ...
-├── docs/             # Technical documentation and design specs
-├── tests/            # Unit and property-based tests
-└── requirements.txt  # Project dependencies
-```
 
 ## Technical Stack
 
